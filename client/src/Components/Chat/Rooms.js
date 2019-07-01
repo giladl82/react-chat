@@ -16,9 +16,14 @@ export default function Rooms() {
       <List component="nav">
         {chats.map(ct => {
           return (
-            <ListItem key={ct} button selected={activeChat === ct} onClick={event => {
-              setActiveChat(ct)
-            }}>
+            <ListItem
+              key={ct}
+              button
+              selected={activeChat === ct}
+              onClick={() => {
+                setActiveChat(ct);
+              }}
+            >
               <ListItemText>{ct}</ListItemText>
             </ListItem>
           );
