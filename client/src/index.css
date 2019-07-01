@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+}
+
+#root {
+  direction: rtl;
+}
+
+.MuiInputLabel-shrink  {
+  transform-origin: top right !important;
+}
