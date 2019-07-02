@@ -43,6 +43,13 @@ export const globalStyles = {
   textLabel: {
     left: 'auto',
     right: 0
+  },
+  chip: {
+    margin: theme.spacing(1),
+  },
+  overflow: {
+    overflow: 'auto',
+    maxHeight: '100%'
   }
 }
 

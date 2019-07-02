@@ -12,29 +12,29 @@ import { setUser } from '../store/user/actions';
 
 export default function Login() {
   const classes = useStyles();
-  const [textValue, setTextValue] = useState('גלעד לב-ארי');
+  const [textValue, setTextValue] = useState('אפי הנמר' + new Date().getSeconds());
   const user = useSelector(state => state.user);
   const dispatch = useDispatch();
 
   if (user) {
-    return <Redirect to="/" />;
+    return <Redirect to='/' />;
   }
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth='sm'>
       <Paper className={classes.paper}>
-        <Typography variant="h5" component="h1" color="inherit">
+        <Typography variant='h5' component='h1' color='inherit'>
           הזן את שם המשתמש איתו תרצה להזדהות
         </Typography>
-        <form noValidate autoComplete="off" className={`${classes.flex} ${classes.flexGrow}`}>
+        <form noValidate autoComplete='off' className={`${classes.flex} ${classes.flexGrow}`}>
           <TextField
-            id="name"
-            label="שם משתמש"
+            id='name'
+            label='שם משתמש'
             className={classes.flexGrow}
             InputLabelProps={{
               className: classes.textLabel
             }}
-            margin="normal"
+            margin='normal'
             value={textValue}
             onChange={event => {
               setTextValue(event.target.value);
@@ -43,8 +43,8 @@ export default function Login() {
           />
           <div className={`${classes.vEnd} ${classes.hSpaced}`}>
             <Button
-              variant="contained"
-              color="primary"
+              variant='contained'
+              color='primary'
               onClick={async () => {
                 if (textValue) {
                   try {

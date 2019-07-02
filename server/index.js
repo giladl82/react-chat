@@ -57,6 +57,36 @@ io.on('connection', function(socket) {
       });
     }
   });
+
+  socket.on('join_room', room => {
+    socket.join(room, () => {
+      const user = users.find(u => u.id === socket.id);
+      if (user) {
+        if (user.currentRoom) {
+          socket.leave(user.currentRoom);
+          socket.to(room).emit('user_left_room', {
+            name: user.name,
+            room: user.currentRoom
+          });
+        }
+        user.currentRoom = room;
+        socket.to(room).emit('user_joined_room', {
+          name: user.name,
+          room
+        });
+        io.to(socket.id).emit('join_room_response', {
+          success: true
+        });
+      } else {
+        socket.disconnect();
+      }
+    });
+  });
+
+  socket.on('message_sent', message => {
+    console.log('message_sent', message);
+    io.to(message.room).emit('new_message', message);
+  });
 });
 
 http.listen(port, function() {

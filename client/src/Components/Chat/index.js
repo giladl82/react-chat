@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { lazy, useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import Button from '@material-ui/core/Button';
 import { globalStyles } from '../../styles';
+import { onNewMessage, clearOnNewMessage } from '../../services/socket';
 
-import Rooms from './Rooms'
+import Avatar from '@material-ui/core/Avatar';
+import Chip from '@material-ui/core/Chip';
+
+const Rooms = lazy(() => import('./Rooms'));
+const MessageForm = lazy(() => import('./MessageForm'));
 
 const chatStyles = makeStyles({
   ...globalStyles,
@@ -33,22 +36,49 @@ const chatStyles = makeStyles({
 export default function Chat() {
   const classes = chatStyles();
   const user = useSelector(state => state.user);
-  console.log(classes.paper);
+  const activeRoom = useSelector(state => state.chat.activeRoom);
+  const [messages, setMessages] = useState([]);
+  const messagesRef = useRef(null);
+
+  useEffect(() => {
+    function handleNewMessage(message) {
+      setMessages(msgs => [...msgs, message]);
+
+      setTimeout(() => {
+        debugger;
+        messagesRef.current.scroll(0, messagesRef.current.scrollHeight);
+      }, 10);
+    }
+
+    onNewMessage(handleNewMessage);
+
+    return () => {
+      clearOnNewMessage();
+    };
+  }, []);
 
   if (!user) {
-    return <Redirect to="/auth" />;
+    return <Redirect to='/auth' />;
   }
 
   return (
     <div className={classes.chat}>
       <Rooms />
-      <Paper className={classes.paper}>This is the chat page</Paper>
-      <Paper className={`${classes.paper} ${classes.flex} ${classes.messageContainer}`}>
-        <InputBase className={`${classes.flexGrow} ${classes.inputBase}`} />
-        <Button variant="contained" color="primary" >
-          שליחה
-        </Button>
+      <Paper className={`${classes.paper}`}>
+        <div className={classes.overflow} ref={messagesRef}>
+          {messages.map(msg => (
+            <div key={msg.date}>
+              <Chip
+                color={msg.user.id === user.id ? 'secondary' : 'default'}
+                avatar={<Avatar alt={msg.user.name} src={`https://i.pravatar.cc/30?u=${msg.user.name}`} />}
+                label={msg.text}
+                className={classes.chip}
+              />
+            </div>
+          ))}
+        </div>
       </Paper>
+      <MessageForm user={user} room={activeRoom} />
     </div>
   );
 }

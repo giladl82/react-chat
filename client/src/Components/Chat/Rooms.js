@@ -1,30 +1,43 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { useStyles } from '../../styles';
+import { setActiveRoom } from '../../store/chat/actions';
+import { joinRoom, onNewUserJoinedRoom } from '../../services/socket';
 
 export default function Rooms() {
   const classes = useStyles();
-  const chats = useSelector(state => state.chats);
-  const [activeChat, setActiveChat] = useState(chats[0]);
+  const chat = useSelector(state => state.chat);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    function handleNewUserJoinedRoom (data) {
+      console.log(data)
+    }
+    onNewUserJoinedRoom(handleNewUserJoinedRoom)
+  }, [])
 
   return (
     <Paper className={classes.paper}>
-      <List component="nav">
-        {chats.map(ct => {
+      <List component='nav'>
+        {chat.rooms.map(room => {
           return (
             <ListItem
-              key={ct}
+              key={room}
               button
-              selected={activeChat === ct}
-              onClick={() => {
-                setActiveChat(ct);
+              selected={chat.activeRoom === room}
+              onClick={async () => {
+                try {
+                  await joinRoom(room);
+                  dispatch(setActiveRoom(room));
+                } catch (error) {
+                }
               }}
             >
-              <ListItemText>{ct}</ListItemText>
+              <ListItemText>{room}</ListItemText>
             </ListItem>
           );
         })}
